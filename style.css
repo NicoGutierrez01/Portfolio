@@ -459,10 +459,10 @@ body {
     overflow: hidden;
 
     width: 100%;
-
+    max-width: 1200px;
     aspect-ratio: 16 / 7;
 
-    margin-bottom: 25px;
+    margin: 0 auto 25px;
 
     background-color: #111111;
 }
@@ -498,6 +498,7 @@ body {
     height: 100%;
 
     object-fit: cover;
+    object-position: center -80px;
 
     transition: transform 0.6s ease;
 }
@@ -530,6 +531,13 @@ body {
     transform: translate(4px, -4px);
 }
 
+.project__preview-link {
+    position: absolute;
+    inset: 0;
+    display: block;
+    cursor: pointer;
+}
+
 /* PROJECT FOOTER */
 
 .project__footer {
@@ -537,6 +545,11 @@ body {
 
     justify-content: space-between;
     align-items: flex-end;
+
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
 
     gap: 40px;
 }
@@ -725,15 +738,23 @@ body {
 /* GAMEPLAY */
 
 .project-media {
-    padding: 100px 4vw;
+    padding: 80px 4vw;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .project-media img {
     width: 100%;
+    max-width: 1200px;
 
-    max-height: 850px;
+    max-height: 650px;
 
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
+
+    margin: 0 auto;
 }
 
 
