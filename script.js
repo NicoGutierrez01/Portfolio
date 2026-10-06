@@ -55,6 +55,7 @@ const heroElements = document.querySelectorAll(
         ".hero__intro",
         ".hero__title span",
         ".hero__description",
+        ".hero__cv",
         ".hero__scroll",
         ".project-hero__top",
         ".project-hero__status",

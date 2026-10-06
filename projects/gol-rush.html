@@ -32,6 +32,13 @@
             <a href="../index.html#projects">PROJECTS</a>
             <a href="../index.html#about">ABOUT</a>
             <a href="../index.html#contact">CONTACT</a>
+            <a
+                href="../assets/docs/Nicolas_Gutierrez_Game_Developer_CV.pdf"
+                class="header__cv"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Curriculum vitae (PDF, opens in a new tab)"
+            >CV <span class="header__cv-arrow" aria-hidden="true">↗</span></a>
         </nav>
 
     </header>
@@ -268,11 +275,138 @@
         </section>
 
 
-        <!-- TEAM -->
+        <!-- TECHNICAL CHALLENGES -->
         <section class="project-section">
 
             <div class="project-section__label">
                 <span>04</span>
+                <p>TECHNICAL CHALLENGES</p>
+            </div>
+
+            <div class="project-section__content">
+
+                <h2>
+                    PROBLEMS
+                    WORTH SOLVING.
+                </h2>
+
+                <p>
+                    Built in Unreal Engine, with the gameplay and physics logic
+                    written in Blueprints.
+                </p>
+
+                <div class="project-challenges">
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 01</span>
+
+                        <h3 class="project-challenge__title">
+                            Two movements, one analog stick
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                A real foosball rod moves in two ways at once:
+                                it slides across the table and spins to kick. Both
+                                have to come from a single controller.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                The analog stick's axes are mapped separately: one
+                                axis drives the rod's translation and the other sets
+                                the rotation angle of its players.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                Players slide and kick at the same time with one
+                                stick, close to the feel of a physical table.
+                            </dd>
+                        </dl>
+                    </article>
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 02</span>
+
+                        <h3 class="project-challenge__title">
+                            A fast ball that never passes through the rods
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                At high speed the ball can travel further than a
+                                rod's thickness in a single physics step and tunnel
+                                straight through it.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                Continuous Collision Detection (CCD) on the ball's
+                                sphere collider, plus physics sub-stepping so
+                                collisions are resolved in smaller steps than the
+                                frame time.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                Hard shots hit the rods consistently instead of
+                                ghosting through them.
+                            </dd>
+                        </dl>
+                    </article>
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 03</span>
+
+                        <h3 class="project-challenge__title">
+                            Goal detection and a clean kickoff
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                After a goal the match has to restart fairly, with
+                                no stray input and no leftover momentum.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                A trigger volume in each goal pauses player input,
+                                resets the ball to the centre of the field with zero
+                                velocity, and starts a timer that resumes play for
+                                the kickoff.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                Every point ends and restarts the same way, and the
+                                previous play can never leak into the next kickoff.
+                            </dd>
+                        </dl>
+
+<pre class="project-challenge__code"><code>// Goal flow (Blueprint logic, summarized)
+GoalTrigger.OnBeginOverlap(Ball)
+    → Disable player input
+    → Update scoreboard
+    → Ball: move to centre, velocity = 0
+    → Timer → Enable input → Kickoff</code></pre>
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TEAM -->
+        <section class="project-section">
+
+            <div class="project-section__label">
+                <span>05</span>
                 <p>TEAM</p>
             </div>
 
@@ -364,7 +498,7 @@
         <section class="project-section">
 
             <div class="project-section__label">
-                <span>05</span>
+                <span>06</span>
                 <p>DEVELOPMENT</p>
             </div>
 
@@ -403,7 +537,7 @@
         <section class="project-section">
 
             <div class="project-section__label">
-                <span>06</span>
+                <span>07</span>
                 <p>TRAILER</p>
             </div>
 

@@ -32,6 +32,13 @@
             <a href="../index.html#projects">PROJECTS</a>
             <a href="../index.html#about">ABOUT</a>
             <a href="../index.html#contact">CONTACT</a>
+            <a
+                href="../assets/docs/Nicolas_Gutierrez_Game_Developer_CV.pdf"
+                class="header__cv"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Curriculum vitae (PDF, opens in a new tab)"
+            >CV <span class="header__cv-arrow" aria-hidden="true">↗</span></a>
         </nav>
 
     </header>
@@ -248,11 +255,184 @@
         </section>
 
 
-        <!-- VISUAL DESIGN -->
+        <!-- TECHNICAL CHALLENGES -->
         <section class="project-section">
 
             <div class="project-section__label">
                 <span>04</span>
+                <p>TECHNICAL CHALLENGES</p>
+            </div>
+
+            <div class="project-section__content">
+
+                <h2>
+                    PROBLEMS
+                    WORTH SOLVING.
+                </h2>
+
+                <p>
+                    Three problems from building an endless jumper solo
+                    in 38 days, and one thing I would do differently.
+                </p>
+
+                <div class="project-challenges">
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 01</span>
+
+                        <h3 class="project-challenge__title">
+                            An endless climb with only 10 platforms
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                An endless vertical level can't be built in advance,
+                                and creating and destroying platforms every few
+                                seconds adds allocation and garbage-collection
+                                pressure in the browser.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                Ten platforms are created once. When one scrolls
+                                past the bottom of the screen it is recycled: moved
+                                above the current highest platform with a random
+                                vertical gap (150–300px) and horizontal offset
+                                (up to ±250px from the centre).
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                A fixed object count for the whole run. The level
+                                never ends, but nothing new is allocated for it
+                                during gameplay.
+                            </dd>
+                        </dl>
+
+<pre class="project-challenge__code"><code>// scenes/Game.js (simplified): recycle instead of destroy
+if (platform.getBounds().bottom &gt; this.game.config.height) {
+    this.positionPlatform(platform);
+}
+
+positionPlatform(platform) {
+    const top = this.getHighesPlatform();
+    platform.y = top - this.randomValue(gameOptions.platformVerticalDistanceRange);
+    platform.x = this.game.config.width / 2
+        + this.randomValue(gameOptions.platformHorizontalDistanceRange)
+        * Phaser.Math.RND.sign();
+}</code></pre>
+                    </article>
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 02</span>
+
+                        <h3 class="project-challenge__title">
+                            One-way platforms and a jetpack boost that feels right
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                The player has to boost up through platforms from
+                                below and land on top of them, and landing points
+                                must not be farmable by bouncing on the same platform.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                Each platform only collides on its top face (down,
+                                left and right checks are disabled). Gravity
+                                (1200 px/s²) applies to the player only, and the
+                                jetpack fires a single vertical impulse (960 px/s)
+                                from solid ground. A <code>platformTouched</code> flag
+                                awards landing points once per boost.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                Players chain boosts upward without snagging on
+                                platform edges, and the score reflects real progress.
+                            </dd>
+                        </dl>
+                    </article>
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 03</span>
+
+                        <h3 class="project-challenge__title">
+                            Difficulty that ramps up on its own
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                An endless game needs pressure that keeps growing
+                                without hand-authored levels.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                A looping timer raises the platform scroll speed
+                                every 5 seconds. A 60-second countdown is extended
+                                by watch pickups (+15s), while spikes end the run;
+                                each can appear on roughly 10% of recycled platforms.
+                                The best score persists in <code>localStorage</code>.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                Runs get harder by themselves, and returning players
+                                always have a record to beat.
+                            </dd>
+                        </dl>
+                    </article>
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">WHAT I'D IMPROVE</span>
+
+                        <h3 class="project-challenge__title">
+                            Listeners that outlive their objects
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>ISSUE</dt>
+                            <dd>
+                                Each power-up subscribes a <code>postupdate</code>
+                                listener on the scene to stay aligned with its
+                                platform, and that listener is never removed, so
+                                listeners pile up as the run goes on.
+                            </dd>
+
+                            <dt>FIX</dt>
+                            <dd>
+                                Decouple the follow logic from the scene and bind it
+                                to the power-up's lifecycle through the event
+                                emitter: subscribe on spawn, unsubscribe on destroy.
+                                Every listener then lives exactly as long as the
+                                object it serves.
+                            </dd>
+                        </dl>
+
+<pre class="project-challenge__code"><code>// What I'd change: scope the listener to the power-up's lifetime
+const follow = () =&gt; Phaser.Display.Align.To.TopCenter(powerUp, platform);
+
+this.events.on("postupdate", follow);
+powerUp.once("destroy", () =&gt; this.events.off("postupdate", follow));</code></pre>
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- VISUAL DESIGN -->
+        <section class="project-section">
+
+            <div class="project-section__label">
+                <span>05</span>
                 <p>VISUAL DESIGN</p>
             </div>
 
@@ -332,7 +512,7 @@
         <section class="project-section">
 
             <div class="project-section__label">
-                <span>05</span>
+                <span>06</span>
                 <p>DEVELOPMENT</p>
             </div>
 
@@ -377,14 +557,25 @@
                 ETERNAL JUMP.
             </h2>
 
-            <a
-                href="https://nicogutierrez01.github.io/TpFinal-Eternal-Jump/"
-                class="project-play__button"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                PLAY GAME ↗
-            </a>
+            <div class="project-play__actions">
+                <a
+                    href="https://nicogutierrez01.github.io/TpFinal-Eternal-Jump/"
+                    class="project-play__button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    PLAY GAME ↗
+                </a>
+
+                <a
+                    href="https://github.com/NicoGutierrez01/TpFinal-Eternal-Jump/tree/Segundo-Avance"
+                    class="project-play__button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    VIEW SOURCE ↗
+                </a>
+            </div>
 
         </section>
 

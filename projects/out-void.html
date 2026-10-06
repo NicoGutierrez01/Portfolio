@@ -32,6 +32,13 @@
             <a href="../index.html#projects">PROJECTS</a>
             <a href="../index.html#about">ABOUT</a>
             <a href="../index.html#contact">CONTACT</a>
+            <a
+                href="../assets/docs/Nicolas_Gutierrez_Game_Developer_CV.pdf"
+                class="header__cv"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Curriculum vitae (PDF, opens in a new tab)"
+            >CV <span class="header__cv-arrow" aria-hidden="true">↗</span></a>
         </nav>
 
     </header>
@@ -280,11 +287,177 @@
         </section>
 
 
-        <!-- TEAM -->
+        <!-- TECHNICAL CHALLENGES -->
         <section class="project-section">
 
             <div class="project-section__label">
                 <span>04</span>
+                <p>TECHNICAL CHALLENGES</p>
+            </div>
+
+            <div class="project-section__content">
+
+                <h2>
+                    PROBLEMS
+                    WORTH SOLVING.
+                </h2>
+
+                <p>
+                    As a programmer and game designer on OUT-VOID, I built
+                    the overall architecture, level generation, NavMesh-driven
+                    enemy AI and the portal spawners.
+                </p>
+
+                <div class="project-challenges">
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 01</span>
+
+                        <h3 class="project-challenge__title">
+                            Runtime levels that the AI can navigate
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                Levels are assembled at runtime, so there is no
+                                NavMesh baked in the editor for enemies to path on,
+                                and building everything in one frame would freeze
+                                the loading screen.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                The first prototype generated a 5×5 tile grid
+                                procedurally: weighted tiles (rifts, dunes, rough or
+                                smooth ground), random 90° rotations and a
+                                single-pass rule that keeps rifts from touching. The
+                                current build places an authored map per level from
+                                level data, with randomized player and portal spawn
+                                points. In both versions <code>NavMeshSurface.BuildNavMesh()</code>
+                                bakes navigation right after the map exists, inside
+                                a staged coroutine that yields between steps and
+                                drives the loading bar.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                The runtime bake takes 100–150 ms at level load, the
+                                loading screen stays responsive, and gameplay holds
+                                a stable 60 FPS.
+                            </dd>
+                        </dl>
+
+<pre class="project-challenge__code"><code>// MapManager.cs (excerpt): build the level in stages, one frame apart
+GenerarMapa();                    // instantiate this level's map
+barraCargaEscena.value = 0.3f;
+yield return null;
+
+ActualizarNavMesh();              // navSurface.BuildNavMesh()
+barraCargaEscena.value = 0.5f;
+yield return null;
+
+SpawnearJugador();
+SpawnearPortales();</code></pre>
+                    </article>
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 02</span>
+
+                        <h3 class="project-challenge__title">
+                            Enemies that fall from portals onto the NavMesh
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                Enemies drop out of portals in mid-air, but a
+                                <code>NavMeshAgent</code> that isn't on the NavMesh
+                                can't move, and landing on clutter or a ledge can
+                                leave it stuck.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                Enemies fall with a Rigidbody while their agent is
+                                disabled. When they touch the ground,
+                                <code>NavMesh.SamplePosition</code> finds the nearest
+                                walkable point within 4 m and a sphere check confirms
+                                there is room. Only then does the body turn kinematic
+                                and the agent get enabled and warped onto that point.
+                                The Kamikaze then alerts by sight or proximity,
+                                chases, and arms for 1.2 s with an accelerating
+                                emissive blink before its explosion.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                Enemies land with physical weight and reliably hand
+                                over to pathfinding, and the blink gives players a
+                                readable window to react.
+                            </dd>
+                        </dl>
+
+<pre class="project-challenge__code"><code>// Kamikaze.cs (simplified): physics → NavMesh handoff on landing
+if (!haAterrizado &amp;&amp; collision.gameObject.CompareTag("Suelo"))
+{
+    if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 4.0f, NavMesh.AllAreas)
+        &amp;&amp; !Physics.CheckSphere(hit.position, 0.8f, capaObstaculos))
+    {
+        haAterrizado = true;
+        agent.enabled = true;
+        agent.Warp(hit.position);
+        rb.isKinematic = true;
+    }
+}</code></pre>
+                    </article>
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 03</span>
+
+                        <h3 class="project-challenge__title">
+                            Scattering props on the real terrain
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                Every level needs decoration that sits on the actual
+                                ground surface, not floating or buried, without
+                                placing each object by hand.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                Random points inside the ground's bounds cast rays
+                                downward and only accept hits on the ground collider;
+                                each hit spawns a random prop with a random rotation.
+                                Placement has an attempt budget (15 tries per object)
+                                so it always terminates, and some props are limited
+                                to slopes under 15°.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                Each run gets varied decoration that follows the
+                                terrain, and level loading can never hang in a
+                                placement loop.
+                            </dd>
+                        </dl>
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TEAM -->
+        <section class="project-section">
+
+            <div class="project-section__label">
+                <span>05</span>
                 <p>TEAM</p>
             </div>
 
@@ -341,7 +514,7 @@
         <section class="project-section">
 
             <div class="project-section__label">
-                <span>05</span>
+                <span>06</span>
                 <p>DEVELOPMENT</p>
             </div>
 
@@ -387,14 +560,25 @@
             </h2>
 
 
-            <a
-                href="https://nicogutierrez.itch.io/out-void"
-                class="project-play__button"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                VIEW ON ITCH.IO ↗
-            </a>
+            <div class="project-play__actions">
+                <a
+                    href="https://nicogutierrez.itch.io/out-void"
+                    class="project-play__button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    VIEW ON ITCH.IO ↗
+                </a>
+
+                <a
+                    href="https://github.com/NicoGutierrez01/OutVoid"
+                    class="project-play__button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    VIEW SOURCE ↗
+                </a>
+            </div>
 
         </section>
 

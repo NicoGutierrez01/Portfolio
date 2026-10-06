@@ -32,6 +32,13 @@
             <a href="../index.html#projects">PROJECTS</a>
             <a href="../index.html#about">ABOUT</a>
             <a href="../index.html#contact">CONTACT</a>
+            <a
+                href="../assets/docs/Nicolas_Gutierrez_Game_Developer_CV.pdf"
+                class="header__cv"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Curriculum vitae (PDF, opens in a new tab)"
+            >CV <span class="header__cv-arrow" aria-hidden="true">↗</span></a>
         </nav>
 
     </header>
@@ -264,6 +271,162 @@
         </section>
 
 
+        <!-- TECHNICAL CHALLENGES -->
+        <section class="project-section">
+
+            <div class="project-section__label">
+                <span>04</span>
+                <p>TECHNICAL CHALLENGES</p>
+            </div>
+
+            <div class="project-section__content">
+
+                <h2>
+                    PROBLEMS
+                    WORTH SOLVING.
+                </h2>
+
+                <p>
+                    As the sole programmer on a three-person team, I owned
+                    gameplay, input, wave logic and the online services,
+                    including the Phaser plugin that connects the game to Firebase.
+                </p>
+
+                <div class="project-challenges">
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 01</span>
+
+                        <h3 class="project-challenge__title">
+                            Two players, one keyboard
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                Versus and co-op put two players on the same
+                                keyboard, each with their own controls, and holding
+                                the attack key must not spam attacks.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                A data-driven <code>InputManager</code>: each key map
+                                (WASD + F, Arrows + K) is a config object, and every
+                                action resolves to a callback. Each scene creates one
+                                instance per player. In versus, attacks are
+                                edge-triggered: a per-player flag is consumed on
+                                attack and only reset when the key is released.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                Both modes share the same input code, remapping
+                                controls is a config change, and holding a key gives
+                                exactly one attack.
+                            </dd>
+                        </dl>
+
+<pre class="project-challenge__code"><code>// src/scenes/Coop.js (excerpt): same class, different key map per player
+this.inputManagerPlayer1 = new InputManager({
+    scene: this,
+    inputConfig: inputConfigs.wasd,  // W A S D + F
+    callbacks: {
+        left:   () =&gt; this.movePlayer(this.player1, "left"),
+        right:  () =&gt; this.movePlayer(this.player1, "right"),
+        action: () =&gt; this.shootBullet(this.player1, this.player1CanAttack),
+        stop:   () =&gt; this.stopPlayer(this.player1)
+    }
+});</code></pre>
+                    </article>
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 02</span>
+
+                        <h3 class="project-challenge__title">
+                            A wave director for co-op
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                Co-op needs difficulty that escalates smoothly, but
+                                a Phaser timer event keeps the delay it was
+                                created with.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                Each wave schedules the next one. Enemies spawn from
+                                a random screen edge, their speed increases, and the
+                                delay between waves shrinks by 5% with a 2-second
+                                floor. Shots auto-aim at the nearest target (enemy
+                                or boss), with a 5-shot magazine and a 2-second reload.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                Pressure ramps up continuously without scripted
+                                levels, and the floor stops late waves from becoming
+                                impossible.
+                            </dd>
+                        </dl>
+
+<pre class="project-challenge__code"><code>// src/scenes/Coop.js (simplified): end of spawnJawaWave()
+this.jawaSpeed += this.speedIncrement;
+this.spawnDelay = Math.max(this.spawnDelay * this.spawnMultiplier, 2000); // -5%, 2 s floor
+
+this.eventspawnJawaWave?.destroy();
+this.eventspawnJawaWave = this.time.addEvent({
+    delay: this.spawnDelay,
+    callback: this.spawnJawaWave,
+    callbackScope: this
+});</code></pre>
+                    </article>
+
+                    <article class="project-challenge">
+                        <span class="project-challenge__index">CHALLENGE 03</span>
+
+                        <h3 class="project-challenge__title">
+                            Online services and localization in a browser game
+                        </h3>
+
+                        <dl class="project-challenge__steps">
+                            <dt>PROBLEM</dt>
+                            <dd>
+                                Login, a shared leaderboard and multiple languages
+                                had to work in a static web build, without the game
+                                scenes depending on network details.
+                            </dd>
+
+                            <dt>SOLUTION</dt>
+                            <dd>
+                                I implemented the integration on the game's frontend
+                                as a Phaser plugin wrapping Firebase: Google, GitHub
+                                and anonymous sign-in, plus score storage in
+                                Firestore, exposed to every scene through one API.
+                                Text is localized at runtime from a translation API,
+                                cached in <code>localStorage</code>, and any missing
+                                key falls back to the local text.
+                            </dd>
+
+                            <dt>RESULT</dt>
+                            <dd>
+                                Login and the leaderboard are integrated into the
+                                game's architecture, and the game supports multiple
+                                languages from one build. A failed or partial
+                                translation never breaks the UI.
+                            </dd>
+                        </dl>
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
         <!-- PROJECT GALLERY -->
         <section class="project-gallery project-gallery--wide">
 
@@ -314,7 +477,7 @@
         <section class="project-section">
 
             <div class="project-section__label">
-                <span>04</span>
+                <span>05</span>
                 <p>TEAM</p>
             </div>
 
@@ -371,7 +534,7 @@
         <section class="project-section">
 
             <div class="project-section__label">
-                <span>05</span>
+                <span>06</span>
                 <p>DEVELOPMENT</p>
             </div>
 
@@ -410,7 +573,7 @@
         <section class="project-section">
 
             <div class="project-section__label">
-                <span>06</span>
+                <span>07</span>
                 <p>TRAILER</p>
             </div>
 
@@ -448,14 +611,25 @@
                 HÉROE SHOWDOWN.
             </h2>
 
-            <a
-                href="https://heroshowdown.netlify.app/"
-                class="project-play__button"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                PLAY GAME ↗
-            </a>
+            <div class="project-play__actions">
+                <a
+                    href="https://heroshowdown.netlify.app/"
+                    class="project-play__button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    PLAY GAME ↗
+                </a>
+
+                <a
+                    href="https://github.com/NicoGutierrez01/-Hero-Showdown-Collector-s-Arena-/tree/Api-Traducila"
+                    class="project-play__button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    VIEW SOURCE ↗
+                </a>
+            </div>
 
         </section>
 
